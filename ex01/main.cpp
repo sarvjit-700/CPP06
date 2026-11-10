@@ -72,5 +72,39 @@ int main()
         std::cout << "Data address   : " << &myData << std::endl;
     }
 
+    // 6. Modify data via recovered pointer (proves it points to the exact same memory)
+    std::cout << YELLOW << "\n--- Verification [Modify via Recovered Pointer] ---" << RESET << std::endl;
+    recoveredData->text = "Modified through recoveredData!";
+    recoveredData->number = 999;
+    std::cout << "Original myData.text     : " << myData.text << std::endl;
+    std::cout << "Original myData.number   : " << myData.number << std::endl;
+
+    // 7. Heap-allocated Data test
+    std::cout << YELLOW << "\n--- Verification [Heap Allocation] ---" << RESET << std::endl;
+    Data* heapData = new Data;
+    heapData->text = "Heap Data";
+    heapData->number = -42;
+
+    uintptr_t rawHeap = Serializer::serialize(heapData);
+    Data* recoveredHeap = Serializer::deserialize(rawHeap);
+
+    if (recoveredHeap == heapData)
+    {
+        std::cout << GREEN << "[SUCCESS] Heap pointers match! (" << recoveredHeap << ")" << RESET << std::endl;
+        std::cout << "Recovered Heap text      : " << recoveredHeap->text << std::endl;
+        std::cout << "Recovered Heap number    : " << recoveredHeap->number << std::endl;
+    }
+    delete heapData;
+
+    // 8. NULL pointer test
+    std::cout << YELLOW << "\n--- Verification [NULL Pointer] ---" << RESET << std::endl;
+    Data* nullPtr = NULL;
+    uintptr_t rawNull = Serializer::serialize(nullPtr);
+    Data* recoveredNull = Serializer::deserialize(rawNull);
+    std::cout << "Serialized NULL          : " << rawNull << std::endl;
+    std::cout << "Recovered NULL pointer   : " << recoveredNull << std::endl;
+    if (recoveredNull == NULL)
+        std::cout << GREEN << "[SUCCESS] NULL pointer preserved!" << RESET << std::endl;
+    
     return 0;
 }

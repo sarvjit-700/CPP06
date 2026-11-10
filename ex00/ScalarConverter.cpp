@@ -51,81 +51,111 @@ static bool isInt(const std::string &s)
             return false;
         i++;
     }
+
+    double val = std::strtod(s.c_str(), NULL);
+    if (val < std::numeric_limits<int>::min() || val > std::numeric_limits<int>::max())
+        return false;
     return true;
 }
 
 static bool isFloat(const std::string &s)
 {
-    size_t  i;
-    bool    hasDot;
-    bool    hasDigit;
-
     if (s == "-inff" || s == "+inff" || s == "nanf")
         return true;
-
-    if (s.empty() || s[s.length() - 1] != 'f' )
+    if (s.length() < 2 || s[s.length() - 1] != 'f')
         return false;
 
-    i = 0;
-    if (s[i] == '-' || s[i] == '+')
-        i++;
-    
-    if (i == s.length() -1)
-        return false;
-    
-    hasDot = false;
-    hasDigit = false;
-    while (i < s.length() - 1)
-    {
-        if (s[i] == '.')
-        {
-            if (hasDot)
-                return false;
-            hasDot = true;
-        }
-        else if (isdigit(s[i]))
-            hasDigit = true;
-        else
-            return false;
-        i++; 
-    }
-    return hasDigit && hasDot;
+    char *endptr = NULL;
+    std::strtod(s.c_str(), &endptr);
+    return (endptr == s.c_str() + s.length() -1);
 }
+
+
+// static bool isFloat(const std::string &s)
+// {
+//     size_t  i;
+//     bool    hasDot;
+//     bool    hasDigit;
+
+//     if (s == "-inff" || s == "+inff" || s == "nanf")
+//         return true;
+
+//     if (s.empty() || s[s.length() - 1] != 'f' )
+//         return false;
+
+//     i = 0;
+//     if (s[i] == '-' || s[i] == '+')
+//         i++;
+    
+//     if (i == s.length() -1)
+//         return false;
+    
+//     hasDot = false;
+//     hasDigit = false;
+//     while (i < s.length() - 1)
+//     {
+//         if (s[i] == '.')
+//         {
+//             if (hasDot)
+//                 return false;
+//             hasDot = true;
+//         }
+//         else if (isdigit(s[i]))
+//             hasDigit = true;
+//         else
+//             return false;
+//         i++; 
+//     }
+//     return hasDigit;
+// }
+
+// static bool isDouble(const std::string &s)
+// {
+//     size_t  i;
+//     bool    hasDot;
+//     bool    hasDigit;
+
+//     if (s == "-inf" || s == "+inf" || s =="nan")
+//         return true;
+    
+//     i = 0;
+//     if (s[i] == '-' || s[i] == '+')
+//         i++;
+
+//     if (i == s.length())
+//         return false;
+
+//     hasDot = false;
+//     hasDigit = false;
+//     while (i < s.length())
+//     {
+//         if (s[i] == '.')
+//         {
+//             if (hasDot)
+//                 return false;
+//             hasDot = true;
+//         }
+//         else if (isdigit(s[i]))
+//             hasDigit = true;
+//         else
+//             return false;
+//         i++;
+//     }
+//     return hasDigit;
+// }
 
 static bool isDouble(const std::string &s)
 {
-    size_t  i;
-    bool    hasDot;
-    bool    hasDigit;
-
-    if (s == "-inf" || s == "+inf" || s =="nan")
+    if (s == "inf" || s == "+inf" || s == "nan")
         return true;
-    
-    i = 0;
-    if (s[i] == '-' || s[i] == '+')
-        i++;
-
-    if (i == s.length())
+    if (s.empty())
         return false;
 
-    hasDot = false;
-    hasDigit = false;
-    while (i < s.length())
-    {
-        if (s[i] == '.')
-        {
-            if (hasDot)
-                return false;
-            hasDot = true;
-        }
-        else if (isdigit(s[i]))
-            hasDigit = true;
-        else
-            return false;
-        i++;
-    }
-    return hasDigit && hasDot;
+    char *endptr = NULL;
+    std::strtod(s.c_str(), &endptr);
+    return (*endptr == '\0' && endptr != s.c_str());
 }
+
 
 static void printResults(char c, int i, float f, double d, const std::string &input)
 {
@@ -167,10 +197,17 @@ static void printResults(char c, int i, float f, double d, const std::string &in
         else
             std::cout << "-inff" << std::endl;
     }
+    else if (f == std::numeric_limits<float>::infinity() || f == -std::numeric_limits<float>::infinity())
+    {
+        if (f < 0)
+            std::cout << "-inff" << std::endl;
+        else
+            std::cout << "+inff" << std::endl;
+    }
     else
     {
         std::cout << f;
-        if (f - static_cast<int>(f) == 0.0f)
+        if (f > -1000000.0f && f < 1000000.0f && f - static_cast<int>(f) == 0.0f)
             std::cout << ".0";
         std::cout << "f" << std::endl;
     }
@@ -185,10 +222,17 @@ static void printResults(char c, int i, float f, double d, const std::string &in
         else
             std::cout << "-inf" << std::endl;
     }
+    else if (d == std::numeric_limits<double>::infinity() || d == -std::numeric_limits<double>::infinity())
+    {
+        if (d < 0)
+            std::cout << "-inf" << std::endl;
+        else
+            std::cout << "+inf" << std::endl;
+    }
     else
     {
         std::cout << d;
-        if (d - static_cast<int>(d) == 0.0)
+        if (d > -1000000.0 && d < 1000000.0 && d - static_cast<int>(d) == 0.0)
             std::cout << ".0";
         std::cout << std::endl;
     }

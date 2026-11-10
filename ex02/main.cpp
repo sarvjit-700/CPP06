@@ -51,11 +51,11 @@ Base* generate(void)
 void identify(Base* p)
 {
     std::cout << "Pointer Identify  : ";
-    if (dynamic_cast<A*>(p))
+    if (dynamic_cast<A*>(p) != NULL)
         std::cout << "A" << std::endl;
-    else if (dynamic_cast<B*>(p))
+    else if (dynamic_cast<B*>(p) != NULL)
         std::cout << "B" << std::endl;
-    else if (dynamic_cast<C*>(p))
+    else if (dynamic_cast<C*>(p) != NULL)
         std::cout << "C" << std::endl;
     else
         std::cout << RED << "Unknown Type" << RESET << std::endl;
@@ -109,5 +109,20 @@ int main()
         delete obj;
         i++;
     }
+
+    std::cout << YELLOW << "\n--- Testing Edge Cases (Unknown & NULL) ---" << RESET << std::endl;
+    
+    // 1. Test raw Base instance (neither A, B, nor C)
+    std::cout << GREEN << "\nTest 6 (Raw Base instance):" << RESET << std::endl;
+    Base* rawBase = new Base();
+    identify(rawBase);
+    identify(*rawBase);
+    delete rawBase;
+
+    // 2. Test NULL pointer
+    std::cout << GREEN << "\nTest 7 (NULL pointer):" << RESET << std::endl;
+    Base* nullBase = NULL;
+    identify(nullBase);
+    
     return 0;
 }

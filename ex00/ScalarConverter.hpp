@@ -18,6 +18,8 @@
 #include <limits>
 #include <cstdlib>
 #include <cctype>
+#include <cmath>
+
 
 #define RESET "\033[;0m"
 #define RED "\033[1;31m"
